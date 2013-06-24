@@ -5,7 +5,7 @@
  *
  * Copyright ##copyright## ##author##
  * All Rights Reserved
- * 
+ *
  * @author      ##author##
  * @modified    ##date##
  * @version     ##library.prettyVersion## (##library.version##)
@@ -42,43 +42,43 @@ import ddf.minim.AudioInput;
  * grid of nodes with a fixed width and height.
  */
 public class HeronLX {
-	
+
 	public final static String VERSION = "##library.prettyVersion##";
 
 	/**
 	 * Returns the version of the library.
-	 * 
+	 *
 	 * @return String
 	 */
 	public static String version() {
 		return VERSION;
 	}
-	
+
 	/**
 	 * A reference to the applet context.
 	 */
 	public final PApplet applet;
-	
+
 	/**
 	 * The width of the grid, immutable.
 	 */
 	public final int width;
-	
+
 	/**
 	 * The height of the grid, immutable.
 	 */
 	public final int height;
-	
+
 	/**
 	 * The midpoint of the x-space, immutable.
 	 */
 	public final double midwidth;
-	
+
 	/**
 	 * This midpoint of the y-space, immutable.
 	 */
 	public final double midheight;
-	
+
 	/**
 	 * The total number of pixels in the grid, immutable.
 	 */
@@ -90,22 +90,22 @@ public class HeronLX {
 	private final int[] kinetColors;
 	private ClientListener client;
 	private double brightness;
-	
+
 	/**
 	 * Whether drawing is enabled
 	 */
 	private boolean drawSimulation;
-	
+
 	/**
-	 * The global tempo object. 
+	 * The global tempo object.
 	 */
 	public final Tempo tempo;
-	
+
 	/**
 	 * The global touch object.
 	 */
-	private Touch touch; 
-	
+	private Touch touch;
+
 	/**
 	 * Minim instance to provide audio input.
 	 */
@@ -115,38 +115,38 @@ public class HeronLX {
 	 * The global audio input.
 	 */
 	private AudioInput audioInput;
-	
+
 	/**
 	 * Global modulator for shared base hue.
 	 */
 	private LXModulator baseHue;
-	
+
 	/**
 	 * Global flash effect.
 	 */
 	private final FlashEffect flash;
-	
+
 	/**
 	 * Global desaturation effect.
 	 */
 	private final DesaturationEffect desaturation;
-	
+
 	private final class Flags {
 		public boolean showFramerate = false;
 		public boolean keyboardTempo = false;
 	}
-	
+
 	private final Flags flags = new Flags();
-		
+
 	/**
 	 * Creates a HeronLX instance. This instance will run patterns
 	 * for a grid of the specified size.
-	 * 
+	 *
 	 * @param applet
 	 * @param width
 	 * @param height
 	 */
-	public HeronLX(PApplet applet, int width, int height) {	
+	public HeronLX(PApplet applet, int width, int height) {
 		this.applet = applet;
 		this.width = width;
 		this.height = height;
@@ -155,39 +155,39 @@ public class HeronLX {
 		this.total = width * height;
 		this.kinet = null;
 		this.client = null;
-		
+
 		this.drawSimulation = true;
-		
+
 		this.engine = new Engine(this);
 		this.simulation = new Simulation(this);
-		
+
 		this.baseHue = null;
 		this.cycleBaseHue(30000);
-		
+
 		this.brightness = 1.;
 		this.kinetColors = new int[this.total];
-		
+
 		this.touch = new Touch.NullTouch();
 		this.tempo = new Tempo();
-		
+
 		this.desaturation = new DesaturationEffect(this);
 		this.flash = new FlashEffect(this);
-				
+
 		applet.colorMode(PConstants.HSB, 360, 100, 100, 100);
 		applet.registerDraw(this);
 		applet.registerSize(this);
 		applet.registerKeyEvent(this);
 	}
-	
+
 	public void enableBasicEffects() {
 		this.addEffect(this.desaturation);
 		this.addEffect(this.flash);
 	}
-	
+
 	public void enableKeyboardTempo() {
 		this.flags.keyboardTempo = true;
 	}
-	
+
 	public void dispose() {
 		if (this.audioInput != null) {
 			this.audioInput.close();
@@ -196,10 +196,10 @@ public class HeronLX {
 			this.minim.stop();
 		}
 	}
-	
+
 	/**
 	 * Utility to create a color from double values
-	 * 
+	 *
 	 * @param h Hue
 	 * @param s Saturation
 	 * @param b Brightness
@@ -208,91 +208,91 @@ public class HeronLX {
 	public final int colord(double h, double s, double b) {
 		return this.applet.color((float)h, (float)s, (float)b);
 	}
-	
+
 	/**
 	 * Utility logging function
-	 * 
+	 *
 	 * @param s Logs the string with relevant prefix
 	 */
 	private void log(String s) {
 		System.out.println("HeronLX: " + s);
 	}
-	
+
 	/**
 	 * Returns the current color values
-	 * 
+	 *
 	 * @return Array of the current color values
 	 */
 	public final int[] getColors() {
 		return this.engine.getColors();
 	}
-	
+
 	/**
 	 * Return the currently active transition
-	 * 
+	 *
 	 * @return A transition if one is active
 	 */
 	public final LXTransition getTransition() {
 		return this.engine.getActiveTransition();
 	}
-	
+
 	/**
 	 * Returns the current pattern
-	 * 
+	 *
 	 * @return Currently active pattern
 	 */
 	public final LXPattern getPattern() {
 		return this.engine.getActivePattern();
 	}
-	
+
 	/**
 	 * Returns the pattern being transitioned to
-	 * 
+	 *
 	 * @return Next pattern
 	 */
 	public final LXPattern getNextPattern() {
 		return this.engine.getNextPattern();
 	}
-	
+
 	/**
 	 * Utility method to access the touch object.
-	 * 
+	 *
 	 * @return The touch object
 	 */
 	public Touch touch() {
 		return this.touch;
 	}
-	
+
 	public final AudioInput audioInput() {
 		if (audioInput == null) {
 			// Lazily instantiated on-demand
 			this.minim = new Minim(this.applet);
-			this.audioInput = minim.getLineIn(Minim.STEREO, 1024);			
+			this.audioInput = minim.getLineIn(Minim.STEREO, 1024);
 		}
 		return audioInput;
 	}
-	
+
 	/**
 	 * Utility function to return the row of a given index
-	 *  
+	 *
 	 * @param i Index into colors array
 	 * @return Which row this index is in
 	 */
 	public int row(int i) {
 		return i / this.width;
 	}
-	
+
 	/**
 	 * Utility function to return the position of an index in x coordinate
 	 * space from 0 to 1.
-	 * 
+	 *
 	 * @param i
 	 * @return Position of this node in x space, from 0 to 1
 	 */
 	public double xpos(int i) {
 		return (i % this.width) / (float) (this.width - 1);
 	}
-	
+
 	public float xposf(int i) {
 		return (float)this.xpos(i);
 	}
@@ -300,49 +300,49 @@ public class HeronLX {
 	/**
 	 * Utility function to return the position of an index in y coordinate
 	 * space from 0 to 1.
-	 * 
+	 *
 	 * @param i
 	 * @return Position of this node in y space, from 0 to 1
 	 */
 	public double ypos(int i) {
 		return (i / this.width) / (float) (this.height - 1);
 	}
-	
+
 	public float yposf(int i) {
 		return (float)this.ypos(i);
 	}
-	
+
 	/**
 	 * Utility function to return the column of a given index
-	 *  
+	 *
 	 * @param i Index into colors array
 	 * @return Which column this index is in
 	 */
 	public int column(int i) {
 		return i % this.width;
 	}
-	
+
 	/**
 	 * Sets brightness factor of the KiNET output, does NOT impact screen simulation
-	 *  
+	 *
 	 * @param brightness Value from 0-100 scale
 	 */
 	public void setBrightness(double brightness) {
 		this.brightness = LXUtils.constrain(brightness/100., 0, 1);
 	}
-	
+
 	/**
 	 * The effects chain
-	 * 
+	 *
 	 * @return The full effects chain
 	 */
 	public List<LXEffect> getEffects() {
 		return this.engine.getEffects();
 	}
-	
+
 	/**
 	 * Add multiple effects to the chain
-	 * 
+	 *
 	 * @param effects
 	 */
 	public void addEffects(LXEffect[] effects) {
@@ -350,10 +350,10 @@ public class HeronLX {
 			addEffect(effect);
 		}
 	}
-	
+
 	/**
 	 * Add an effect to the FX chain.
-	 * 
+	 *
 	 * @param effect
 	 * @return Effect added
 	 */
@@ -361,19 +361,19 @@ public class HeronLX {
 		this.engine.addEffect(effect);
 		return effect;
 	}
-	
+
 	/**
 	 * Remove an effect from the chain
-	 * 
+	 *
 	 * @param effect
 	 */
 	public void removeEffect(LXEffect effect) {
 		this.engine.removeEffect(effect);
 	}
-	
+
 	/**
 	 * Add a generic modulator to the engine
-	 * 
+	 *
 	 * @param modulator
 	 * @return Modulator added
 	 */
@@ -381,35 +381,35 @@ public class HeronLX {
 		this.engine.addModulator(modulator);
 		return modulator;
 	}
-	
+
 	/**
 	 * Remove a modulator from the engine
-	 * 
+	 *
 	 * @param modulator
 	 */
 	public void removeModulator(LXModulator modulator) {
 		this.engine.removeModulator(modulator);
 	}
-	
+
 	public void flash() {
 		this.flash.trigger();
 	}
-	
+
 	public void goPrev() {
 		this.engine.goPrev();
 	}
-	
+
 	public void goNext() {
 		this.engine.goNext();
 	}
-	
+
 	public void goIndex(int i) {
 		this.engine.goIndex(i);
 	}
 
 	/**
 	 * Returns the base hue shared across patterns
-	 * 
+	 *
 	 * @return Base hue value shared by all patterns
 	 */
 	public double getBaseHue() {
@@ -418,35 +418,35 @@ public class HeronLX {
 		}
 		return (this.baseHue.getValue() + 360) % 360;
 	}
-	
+
 	public float getBaseHuef() {
 		return (float)this.getBaseHue();
 	}
-	
+
 	/**
 	 * Sets the base hue to a fixed value
-	 * 
+	 *
 	 * @param hue Fixed value to set hue to, 0-360
 	 */
 	public void setBaseHue(double hue) {
 		this.engine.removeModulator(this.baseHue);
 		this.engine.addModulator(this.baseHue = new LinearEnvelope(this.getBaseHue(), hue, 50).trigger());
 	}
-	
+
 	/**
 	 * Sets the base hue to cycle through the spectrum
-	 * 
-	 * @param duration Number of milliseconds for hue cycle 
+	 *
+	 * @param duration Number of milliseconds for hue cycle
 	 */
 	public void cycleBaseHue(double duration) {
 		double currentHue = this.getBaseHue();
 		this.engine.removeModulator(this.baseHue);
 		this.engine.addModulator(this.baseHue = new SawLFO(0, 360, duration).setValue(currentHue).start());
 	}
-	
+
 	/**
 	 * Sets the base hue to oscillate between two spectrum values
-	 * 
+	 *
 	 * @param lowHue Low hue value
 	 * @param highHue High hue value
 	 * @param duration Milliseconds for hue oscillation
@@ -463,37 +463,37 @@ public class HeronLX {
 	public void disableAutoTransition() {
 		this.engine.disableAutoTransition();
 	}
-	
+
 	/**
 	 * Sets the patterns to rotate automatically
-	 * 
+	 *
 	 * @param autoTransitionThreshold Number of milliseconds after which to rotate pattern
 	 */
 	public void enableAutoTransition(int autoTransitionThreshold) {
 		this.engine.enableAutoTransition(autoTransitionThreshold);
 	}
-	
+
 	/**
 	 * Whether auto transition is enabled.
-	 * 
+	 *
 	 * @return Whether auto transition is enabled.
 	 */
 	public boolean isAutoTransitionEnabled() {
 		return this.engine.isAutoTransitionEnabled();
 	}
-	
+
 	/**
 	 * Enable the simulation renderer
-	 * 
+	 *
 	 * @param s Whether to automatically draw a simulation
 	 */
 	public void enableSimulation(boolean s) {
 		this.drawSimulation = s;
 	}
-	
+
 	/**
 	 * Sets the size of the drawn simulation in the Processing window
-	 * 
+	 *
 	 * @param x Top left x coordinate
 	 * @param y Top left y coordinate
 	 * @param w Width of simulation in pixels
@@ -502,7 +502,16 @@ public class HeronLX {
 	public void setSimulationBounds(int x, int y, int w, int h) {
 		this.simulation.setBounds(x, y, w, h);
 	}
-	
+
+	/**
+	 * Sets the drawing style of the pixels in the simulation.
+	 *
+	 * @param pixelStyle Style of the pixel (Simulation.PIXEL_STYLE_SMALL_POINT=0 or Simulation.PIXEL_STYLE_FULL_RECT=1)
+	 */
+	public void setSimulationPixelStyle(int pixelStyle) {
+		this.simulation.setPixelStyle(pixelStyle);
+	}
+
 	/**
 	 * Listens for UDP packets from HeronLX clients.
 	 */
@@ -511,10 +520,10 @@ public class HeronLX {
 		this.client.addListener(this);
 		this.touch = this.client.touch();
 	}
-	
+
 	/**
 	 * Specifies an array of kinet nodes to send output to.
-	 * 
+	 *
 	 * @param kinetNodes Array of KinetNode objects, must have length equal to width * height
 	 */
 	public void setKinetNodes(KinetNode[] kinetNodes) {
@@ -531,31 +540,31 @@ public class HeronLX {
 			}
 		}
 	}
-	
+
 	/**
 	 * Specifies a Kinet object to run lighting output
-	 * 
+	 *
 	 * @param kinet Kinet instance with total size equal to width * height
 	 */
 	public void setKinet(Kinet kinet) {
 		if (kinet != null && (kinet.size() != this.total)) {
-			throw new RuntimeException("Kinet provided to setKinet is the wrong size, must equal length of HeronLX, use null for non-mapped output nodes.");			
+			throw new RuntimeException("Kinet provided to setKinet is the wrong size, must equal length of HeronLX, use null for non-mapped output nodes.");
 		}
 		this.kinet = kinet;
 	}
 
 	/**
-	 * Specifies the set of patterns to be run. 
-	 * 
+	 * Specifies the set of patterns to be run.
+	 *
 	 * @param patterns
 	 */
 	public void setPatterns(LXPattern[] patterns) {
 		this.engine.setPatterns(patterns);
 	}
-	
+
 	/**
 	 * Gets the current set of patterns
-	 * 
+	 *
 	 * @return The pattern set
 	 */
 	public LXPattern[] getPatterns() {
@@ -590,11 +599,11 @@ public class HeronLX {
 			System.out.println("Framerate: " + this.applet.frameRate);
 		}
 	}
-	
+
 	public void size(int width, int height) {
-		this.simulation.setBounds(0, 0, width, height);
+		this.setSimulationBounds(0, 0, width, height);
 	}
-	
+
 	public void keyEvent(KeyEvent e) {
 		if (e.getID() == KeyEvent.KEY_RELEASED) {
 			switch (e.getKeyCode()) {
@@ -615,7 +624,7 @@ public class HeronLX {
 				}
 				break;
 			}
-			
+
 			switch (e.getKeyChar()) {
 			case '[':
 				this.engine.goPrev();
@@ -652,7 +661,7 @@ public class HeronLX {
 			}
 		}
 	}
-	
+
 	public final PGraphics getGraphics() {
 		return this.applet.g;
 	}
