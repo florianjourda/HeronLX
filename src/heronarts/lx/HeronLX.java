@@ -14,6 +14,7 @@
 package heronarts.lx;
 
 import heronarts.lx.client.ClientListener;
+import heronarts.lx.dmx.DMXOutput;
 import heronarts.lx.effect.DesaturationEffect;
 import heronarts.lx.effect.FlashEffect;
 import heronarts.lx.effect.LXEffect;
@@ -86,8 +87,8 @@ public class HeronLX {
 
 	private final Engine engine;
 	private final Simulation simulation;
-	private Kinet kinet;
-	private final int[] kinetColors;
+	private RGBNodeOutput RGBNodeOutput;
+	private final int[] dimmedColors;
 	private ClientListener client;
 	private double brightness;
 
@@ -153,7 +154,7 @@ public class HeronLX {
 		this.midwidth = (width-1)/2.;
 		this.midheight = (height-1)/2.;
 		this.total = width * height;
-		this.kinet = null;
+		this.RGBNodeOutput = null;
 		this.client = null;
 
 		this.drawSimulation = true;
@@ -165,7 +166,7 @@ public class HeronLX {
 		this.cycleBaseHue(30000);
 
 		this.brightness = 1.;
-		this.kinetColors = new int[this.total];
+		this.dimmedColors = new int[this.total];
 
 		this.touch = new Touch.NullTouch();
 		this.tempo = new Tempo();
@@ -528,14 +529,14 @@ public class HeronLX {
 	 */
 	public void setKinetNodes(KinetNode[] kinetNodes) {
 		if (kinetNodes == null) {
-			this.kinet = null;
+			this.RGBNodeOutput = null;
 		} else if (kinetNodes.length != this.total) {
 			throw new RuntimeException("Array provided to setKinetNodes is the wrong length, must equal length of HeronLX, use null for non-mapped output nodes.");
 		} else {
 			try {
-				this.kinet = new Kinet(kinetNodes);
+				this.RGBNodeOutput = new Kinet(kinetNodes);
 			} catch (SocketException sx) {
-				this.kinet = null;
+				this.RGBNodeOutput = null;
 				throw new RuntimeException("Could not create UDP socket for Kinet", sx);
 			}
 		}
@@ -550,7 +551,22 @@ public class HeronLX {
 		if (kinet != null && (kinet.size() != this.total)) {
 			throw new RuntimeException("Kinet provided to setKinet is the wrong size, must equal length of HeronLX, use null for non-mapped output nodes.");
 		}
-		this.kinet = kinet;
+		this.RGBNodeOutput = kinet;
+	}
+
+	/**
+	 * Specifies a DMX output object to run lighting output to display the RGB nodes given by this.colors.
+	 *
+	 * @param DMXOutput DMXOutput instance with total size equal to width * height
+	 */
+	public void setDMXOuput(DMXOutput DMXOutput) {
+		if (DMXOutput == null) {
+			this.RGBNodeOutput = null;
+		} else if (DMXOutput.size() != this.total) {
+			throw new RuntimeException("Array provided to setDMXOuput is the wrong length, must equal length of HeronLX, use null for non-mapped output nodes.");
+		} else {
+			this.RGBNodeOutput = DMXOutput;
+		}
 	}
 
 	/**
@@ -577,19 +593,19 @@ public class HeronLX {
 		}
 		this.engine.run();
 		int[] colors = this.engine.getColors();
-		if (this.kinet != null) {
+		if (this.RGBNodeOutput != null) {
 			if (this.brightness < 1.) {
 				float factor = (float) (this.brightness * this.brightness);
 				for (int i = 0; i < colors.length; ++i) {
-					this.kinetColors[i] = this.applet.color(
-							this.applet.hue(colors[i]),
-							this.applet.saturation(colors[i]),
-							this.applet.brightness(colors[i]) * factor
-							);
+					this.dimmedColors[i] = this.applet.color(
+						this.applet.hue(colors[i]),
+						this.applet.saturation(colors[i]),
+						this.applet.brightness(colors[i]) * factor
+					);
 				}
-				this.kinet.sendThrottledColors(kinetColors);
+				this.RGBNodeOutput.sendThrottledColors(this.dimmedColors);
 			} else {
-				this.kinet.sendThrottledColors(colors);
+				this.RGBNodeOutput.sendThrottledColors(colors);
 			}
 		}
 		if (this.drawSimulation) {

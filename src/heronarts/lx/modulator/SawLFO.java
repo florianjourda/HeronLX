@@ -5,7 +5,7 @@
  *
  * Copyright ##copyright## ##author##
  * All Rights Reserved
- * 
+ *
  * @author      ##author##
  * @modified    ##date##
  * @version     ##library.prettyVersion## (##library.version##)
@@ -25,7 +25,7 @@ import java.lang.Math;
 public class SawLFO extends LXModulator {
 	private double startVal;
 	private double endVal;
-	private double step;
+	private double deltaValuePerDeltaMs;
 
 	public SawLFO(double startVal, double endVal, double durationMs) {
 		this.value = this.startVal = startVal;
@@ -41,7 +41,7 @@ public class SawLFO extends LXModulator {
 	}
 
 	public SawLFO setDuration(double durationMs) {
-		this.step = (this.endVal - this.startVal) / durationMs;
+		this.deltaValuePerDeltaMs = (this.endVal - this.startVal) / durationMs;
 		return this;
 	}
 
@@ -51,10 +51,10 @@ public class SawLFO extends LXModulator {
 	}
 
 	protected void computeRun(int deltaMs) {
-		this.value += this.step * deltaMs;
-		if ((this.step > 0) && (this.value > this.endVal)) {
+		this.value += this.deltaValuePerDeltaMs * deltaMs;
+		if ((this.deltaValuePerDeltaMs > 0) && (this.value > this.endVal)) {
 			this.value = this.startVal + (this.value - this.endVal);
-		} else if ((this.step < 0) && (this.value < this.endVal)) {
+		} else if ((this.deltaValuePerDeltaMs < 0) && (this.value < this.endVal)) {
 			this.value = this.startVal - (this.endVal - this.value);
 		}
 	}
