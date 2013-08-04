@@ -324,6 +324,20 @@ public class HeronLX {
 	}
 
 	/**
+	 * Utility function to return the index of a given row and column
+	 *
+	 * @param row Row into colors array
+	 * @param column Column into colors array
+	 * @return Which index the row and column is
+	 */
+	public int index(int row, int column) {
+		assert 0 <= row && row < this.width;
+		assert 0 <= column && column < this.height;
+		return row * this.width + column;
+	}
+
+
+	/**
 	 * Sets brightness factor of the KiNET output, does NOT impact screen simulation
 	 *
 	 * @param brightness Value from 0-100 scale
@@ -614,6 +628,10 @@ public class HeronLX {
 		if (this.flags.showFramerate) {
 			System.out.println("Framerate: " + this.applet.frameRate);
 		}
+	}
+
+	public void exit() {
+		System.out.println("EXIT");
 	}
 
 	public void size(int width, int height) {
