@@ -37,6 +37,7 @@ import processing.core.PGraphics;
 
 import ddf.minim.Minim;
 import ddf.minim.AudioInput;
+import processing.core.PVector;
 
 /**
  * Core controller for a HeronLX instance. Each instance drives a
@@ -324,16 +325,26 @@ public class HeronLX {
 	}
 
 	/**
-	 * Utility function to return the index of a given row and column
+	 * Utility function to return the index of a given x and y
 	 *
-	 * @param row Row into colors array
-	 * @param column Column into colors array
-	 * @return Which index the row and column is
+	 * @param x Row into colors array
+	 * @param y Column into colors array
+	 * @return Which index the x and y is at
 	 */
-	public int index(int row, int column) {
-		assert 0 <= row && row < this.width;
-		assert 0 <= column && column < this.height;
-		return row * this.width + column;
+	public int index(int x, int y) {
+		assert 0 <= x && x < this.width;
+		assert 0 <= y && y < this.height;
+		return x * this.width + y;
+	}
+
+	/**
+	 * Utility function to return the index of a given point
+	 *
+	 * @param point Point in the node matrix
+	 * @return Which index the point is at
+	 */
+	public int index(PVector point) {
+		return this.index((int)point.x, (int)point.y);
 	}
 
 

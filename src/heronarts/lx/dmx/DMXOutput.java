@@ -26,9 +26,13 @@ public class DMXOutput extends RGBNodeOutput {
 	 * Creates a DMXOuput instance. This instance will send color
 	 * signal to the DMX device for all nodes.
 	 *
+	 * Case matters for DMXProPort:
+	 * - On Windows, port must be upper cased: "COM18"
+	 * - On Mac, look at "ls -al /dev/tty.usbserial*" to get your port
+	 *
 	 * @param applet
 	 * @param DMXProPort
-	 * @param DMXProBaudrate Case matters. On Windows port must be upper cased: "COM18". Example for Mac: "/dev/ttys005"
+	 * @param DMXProBaudrate
 	 * @param universeSize
 	 * @param outputNodes
 	 */
