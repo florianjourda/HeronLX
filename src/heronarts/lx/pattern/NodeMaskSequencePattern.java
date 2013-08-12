@@ -3,9 +3,10 @@ package heronarts.lx.pattern;
 import heronarts.lx.HeronLX;
 import heronarts.lx.modulator.SawLFO;
 import heronarts.lx.nodemask.NodeMask;
+import heronarts.lx.nodemask.sequence.NodeMaskSequence;
+import processing.core.PApplet;
+import processing.core.PConstants;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,29 +16,34 @@ import java.util.Set;
 public class NodeMaskSequencePattern extends LXPattern {
 
 	final private SawLFO modulator;
-	final private NodeMask[] nodeMaskSequence;
+	final private NodeMaskSequence nodeMaskSequence;
+	int activeColor;
 
-	public NodeMaskSequencePattern(HeronLX lx, ArrayList<NodeMask> nodeMaskSequence) {
-		this(lx, nodeMaskSequence.toArray(new NodeMask[nodeMaskSequence.size()]));
-	}
-
-	public NodeMaskSequencePattern(HeronLX lx, NodeMask[] nodeMaskSequence) {
+	public NodeMaskSequencePattern(HeronLX lx, NodeMaskSequence nodeMaskSequence, int stepDurationMs, int activeColor) {
 		super(lx);
 		this.nodeMaskSequence = nodeMaskSequence;
+		this.activeColor = activeColor;
 		int startVal = 0;
 		int endVal = this.nodeMaskSequence.length;
-		int durationMs = (endVal - startVal) * 1000; // One seconde per step
+		int durationMs = (endVal - startVal) * stepDurationMs; // One seconde per step
 		this.modulator = new SawLFO(startVal, endVal, durationMs);
 		this.addModulator(this.modulator).trigger();
 	}
 
 	public void run(int deltaMs) {
-		int activeMaskIndex = (int) Math.floor(this.modulator.getValue());
-		NodeMask activeNodeMask = this.nodeMaskSequence[activeMaskIndex];
+		this.clearColors();
+		double step = this.modulator.getValue();
+		int activeMaskIndex = (int) Math.floor(step);
+		float stepInsideStep = (float) step % 1;
+		stepInsideStep = (float) 1.0;
+		NodeMask activeNodeMask = this.nodeMaskSequence.get(activeMaskIndex);
 		Set<Integer> activeMaskNodeIndexes = activeNodeMask.getNodeIndexes();
-		for (int nodeIndex = 0; nodeIndex < lx.total; nodeIndex++)
-		{
-			int color = (activeMaskNodeIndexes.contains(nodeIndex)) ? 0xFFFFFFFF : 0xFFFF0000;
+		for (int nodeIndex : activeMaskNodeIndexes) {
+			int color = PApplet.lerpColor(
+				0xFF000000,
+				this.activeColor,
+				stepInsideStep,
+				PConstants.RGB);
 			this.setColor(nodeIndex, color);
 		}
 	}

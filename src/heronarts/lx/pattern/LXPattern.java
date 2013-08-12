@@ -5,7 +5,7 @@
  *
  * Copyright ##copyright## ##author##
  * All Rights Reserved
- * 
+ *
  * @author      ##author##
  * @modified    ##date##
  * @version     ##library.prettyVersion## (##library.version##)
@@ -16,9 +16,11 @@ package heronarts.lx.pattern;
 import heronarts.lx.HeronLX;
 import heronarts.lx.control.LXParameterized;
 import heronarts.lx.modulator.LXModulator;
+import heronarts.lx.nodemask.NodeMask;
 import heronarts.lx.transition.LXTransition;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 
 import processing.core.PConstants;
@@ -32,24 +34,24 @@ public abstract class LXPattern extends LXParameterized {
 	protected int intervalBegin = -1;
 	protected int intervalEnd = -1;
 	private boolean eligible = true;
-	
+
 	protected LXPattern(HeronLX lx) {
 		this.lx = lx;
 		this.colors = new int[lx.total];
 		this.modulators = new ArrayList<LXModulator>();
 		this.transition = null;
 	}
-	
+
 	final public LXPattern runDuringInterval(int begin, int end) {
 		this.intervalBegin = begin;
 		this.intervalEnd = end;
 		return this;
 	}
-	
+
 	final public boolean hasInterval() {
 		return (this.intervalBegin >= 0) && (this.intervalEnd >= 0);
 	}
-	
+
 	final public boolean isInInterval() {
 		if (!this.hasInterval()) {
 			return false;
@@ -64,44 +66,44 @@ public abstract class LXPattern extends LXParameterized {
 			return (now >= this.intervalBegin) || (now < this.intervalEnd);
 		}
 	}
-	
+
 	final public LXPattern setEligible(boolean eligible) {
 		this.eligible = eligible;
 		return this;
 	}
-	
+
 	final public LXPattern toggleEligible() {
 		this.setEligible(!this.eligible);
 		return this;
 	}
-	
+
 	final public boolean isEligible() {
 		return
 			this.eligible &&
 			(!this.hasInterval() || this.isInInterval());
 	}
-	
+
 	final public LXPattern setTransition(LXTransition transition) {
 		this.transition = transition;
 		return this;
 	}
-	
+
 	final public LXTransition getTransition() {
 		return transition;
 	}
-	
+
 	final protected int addColor(int i, int c) {
 		return this.colors[i] = this.lx.applet.blendColor(this.colors[i], c, PConstants.ADD);
 	}
-	
+
 	final protected int setColor(int i, int c) {
 		return this.colors[i] = c;
 	}
-	
+
 	final protected int addColor(int x, int y, int c) {
 		return this.addColor(x + y * this.lx.width, c);
 	}
-	
+
 	final protected int setColor(int x, int y, int c) {
 		return this.colors[x + y * this.lx.width] = c;
 	}
@@ -116,9 +118,28 @@ public abstract class LXPattern extends LXParameterized {
 		return m;
 	}
 
+	final protected void setColor(NodeMask activeNodeMask, int color) {
+		Set<Integer> activeMaskNodeIndexes = activeNodeMask.getNodeIndexes();
+		for (int nodeIndex : activeMaskNodeIndexes) {
+			this.setColor(nodeIndex, color);
+		}
+	}
+
 	final protected void setColors(int c) {
 		for (int i = 0; i < colors.length; ++i) {
 			this.colors[i] = c;
+		}
+	}
+
+	final protected void setColors(int[] colors) {
+		for (int i = 0; i < this.colors.length; ++i) {
+			this.colors[i] = colors[i];
+		}
+	}
+
+	final protected void addColors(int[] colors) {
+		for (int i = 0; i < this.colors.length; i++) {
+			this.addColor(i, colors[i]);
 		}
 	}
 
@@ -136,10 +157,10 @@ public abstract class LXPattern extends LXParameterized {
 		}
 		this.run(deltaMs);
 	}
-	
+
 	/**
 	 * Main pattern loop function. Invoked in a render loop.
-	 * 
+	 *
 	 * @param deltaMs Number of milliseconds elapsed since last invocation
 	 */
 	abstract protected void run(int deltaMs);
@@ -147,15 +168,15 @@ public abstract class LXPattern extends LXParameterized {
 	final public void willBecomeActive() {
 		this.onActive();
 	}
-	
+
 	final public void didResignActive() {
 		this.onInactive();
 	}
-	
+
 	/* abstract */ protected void onActive() {}
-	
+
 	/* abstract */ protected void onInactive() {}
-	
+
 	/* abstract */ public void onTransitionStart() {}
 
 	/* abstract */ public void onKnob(int num, int value) {}
@@ -167,6 +188,5 @@ public abstract class LXPattern extends LXParameterized {
 	/* abstract */ public void onTouchStart() {}
 
 	/* abstract */ public void onTouchEnd() {}
-
 }
 

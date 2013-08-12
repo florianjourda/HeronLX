@@ -76,11 +76,11 @@ public class NodeMask {
 	 * @return The set of nodes located a line from a point to another.
 	 */
 	static Set<Integer>calculateNodeIndexesOnLine(HeronLX lx, PVector from, PVector to) {
-		System.out.println("LINE:");
-		System.out.println(from.x);
-		System.out.println(from.y);
-		System.out.println(to.x);
-		System.out.println(to.y);
+		//System.out.println("LINE:");
+		//System.out.println(from.x);
+		//System.out.println(from.y);
+		//System.out.println(to.x);
+		//System.out.println(to.y);
 		float maxDistance = Math.max(Math.abs(to.x - from.x), Math.abs(to.y - from.y));
 		float deltaX, deltaY;
 		if (maxDistance > 0) {
@@ -90,20 +90,20 @@ public class NodeMask {
 			deltaX = 0;
 			deltaY = 0;
 		}
-		System.out.println(deltaX);
-		System.out.println(deltaY);
+		//System.out.println(deltaX);
+		//System.out.println(deltaY);
 		Set<Integer> nodeIndexes = new HashSet<Integer>();
 		for (int step = 0; step <= maxDistance; step++) {
 			int x = (int)(from.x + step * deltaX);
 			int y = (int)(from.y + step * deltaY);
 			int nodeIndex = lx.index(x, y);
-			System.out.println("add:");
-			System.out.println(x);
-			System.out.println(y);
+			//System.out.println("add:");
+			//System.out.println(x);
+			//System.out.println(y);
 			nodeIndexes.add(nodeIndex);
 		}
-		System.out.println("ALL:");
-		System.out.println(nodeIndexes);
+		//System.out.println("ALL:");
+		//System.out.println(nodeIndexes);
 		return nodeIndexes;
 	}
 }
