@@ -13,6 +13,7 @@ public class NodeMask {
 	final private Set<Integer> nodeIndexes;
 	final private int width;
 	final private int height;
+	private HeronLX lx;
 
 	public NodeMask(HeronLX lx) {
 		this(lx, new HashSet<Integer>());
@@ -36,9 +37,14 @@ public class NodeMask {
 	}
 
 	public NodeMask(HeronLX lx, Set<Integer> nodeIndexes) {
+		this.lx = lx;
 		this.width = lx.width;
 		this.height = lx.height;
 		this.nodeIndexes = nodeIndexes;
+	}
+
+	public String toString() {
+		return "NodeMask " + this.nodeIndexes;
 	}
 
 	private int minIndex() {
@@ -49,14 +55,17 @@ public class NodeMask {
 		return this.width * this.height - 1;
 	}
 
-	public void addNodeIndex(int index) {
+	public void addNodeIndex(PVector position) throws AssertionError {
+		this.addNodeIndex(this.lx.index(position));
+	}
+
+	public void addNodeIndex(int index) throws AssertionError {
 		assert this.minIndex() <= index && index <= this.maxIndex();
 		this.nodeIndexes.add(index);
 	}
 
-	public void addNodeIndexes(Integer[] indexes) {
-		for (int i = 0; i < indexes.length; i++) {
-			int index = indexes[i];
+	public void addNodeIndexes(Iterable<Integer> indexes) {
+		for (Integer index : indexes) {
 			// Don't use directly nodeIndexe.addAll because we want to use
 			// the checks inside addNodeIndex
 			this.addNodeIndex(index);

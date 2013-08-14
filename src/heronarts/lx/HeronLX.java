@@ -327,24 +327,32 @@ public class HeronLX {
 	/**
 	 * Utility function to return the index of a given x and y
 	 *
-	 * @param x Row into colors array
-	 * @param y Column into colors array
+	 * @param x Column into colors array
+	 * @param y Row into colors array
 	 * @return Which index the x and y is at
 	 */
 	public int index(int x, int y) {
 		assert 0 <= x && x < this.width;
 		assert 0 <= y && y < this.height;
-		return x * this.width + y;
+		return y * this.width + x;
 	}
 
 	/**
-	 * Utility function to return the index of a given point
+	 * Utility function to return the index of a given position
 	 *
-	 * @param point Point in the node matrix
-	 * @return Which index the point is at
+	 * @param position Point in the node matrix
+	 * @return Which index the position is at
 	 */
-	public int index(PVector point) {
-		return this.index((int)point.x, (int)point.y);
+	public int index(PVector position) {
+		return this.index((int)position.x, (int)position.y);
+	}
+
+	/**
+	 *
+	 * @return A vector corresponding to the center of the matrix
+	 */
+	public PVector getCenterPosition() {
+		return new PVector((int) this.midwidth, (int) this.midheight);
 	}
 
 

@@ -39,10 +39,16 @@ public class WavePattern extends LXPattern {
 		this.colorCache.saveColorAtTime(newColor, nodeMaskTime);
 		this.clearColors();
 		int nodeMaskColor;
+//		System.out.println("\n\n===============\n\n");
+		int i =0;
 		for (NodeMask nodeMask : this.nodeMaskSequence.getIteratable()) {
+//			System.out.println("Set color for " + i + ": " + nodeMask);
+			i++;
 			try {
 				nodeMaskColor = this.colorCache.getColorAtTime(nodeMaskTime);
+//				System.out.println(nodeMaskColor);
 			} catch (ColorCacheException exception) {
+//				System.out.println("USE DEFAULT COLOR");
 				// If a color could not be found for the given time, we use the default color (black)
 				nodeMaskColor = DEFAULT_COLOR;
 			}
