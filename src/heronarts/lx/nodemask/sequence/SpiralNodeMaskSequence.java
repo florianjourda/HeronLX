@@ -27,7 +27,7 @@ public class SpiralNodeMaskSequence extends NodeMaskSequence {
 		super();
 		float distanceIncrementAfterRotation = (float) .5 * ratio;
 		float rotationAngle = (float) -Math.PI / 2;  // Counter-clockwise for y increasing downward.
-		SquareSpiralWalker squareSpiralWalker = new SquareSpiralWalker(center, stepDirection, distanceIncrementAfterRotation, rotationAngle);
+		SpiralWalker spiralWalker = new SpiralWalker(center, stepDirection, distanceIncrementAfterRotation, rotationAngle);
 
 		this.nodeMaskArrayList = new ArrayList<NodeMask>();
 		// TODO(florian.jourda): make this work for spirals that are not centered
@@ -35,14 +35,14 @@ public class SpiralNodeMaskSequence extends NodeMaskSequence {
 		int max = width * width;// / ratio;
 		for (int i = 0; i < max; i ++) {
 			NodeMask nodeMask = new NodeMask(lx);
-			PVector currentPosition = squareSpiralWalker.getCurrentPosition();
+			PVector currentPosition = spiralWalker.getCurrentPosition();
 			try {
 				nodeMask.addNodeIndex(currentPosition);
 			} catch (AssertionError exception) {
 				// Ignore
 			}
 			this.nodeMaskArrayList.add(nodeMask);
-			squareSpiralWalker.walkNextStep();
+			spiralWalker.walkNextStep();
 		}
 		this.length = this.nodeMaskArrayList.size();
 	}
@@ -60,7 +60,7 @@ public class SpiralNodeMaskSequence extends NodeMaskSequence {
 /**
  * Iterator that find the next position to go to in order to complete a square spiral outward-going.
  */
-class SquareSpiralWalker {
+class SpiralWalker {
 
 	private PVector currentPosition;
 	private PVector stepDirection;
@@ -69,7 +69,7 @@ class SquareSpiralWalker {
 	private float distanceSinceLastRotation;
 	private float distanceBeforeNextRotation;
 
-	public SquareSpiralWalker(PVector center, PVector stepDirection, float distanceIncrementAfterRotation, float rotationAngle) {
+	public SpiralWalker(PVector center, PVector stepDirection, float distanceIncrementAfterRotation, float rotationAngle) {
 		this.currentPosition = copyPVector(center);
 		this.stepDirection = copyPVector(stepDirection);
 		this.distanceIncrementAfterRotation = distanceIncrementAfterRotation;
@@ -80,7 +80,7 @@ class SquareSpiralWalker {
 
 	public String toString() {
 		return (
-			"SquareSpiralWalker:\n" +
+			"SpiralWalker:\n" +
 			"\tcurrentPosition: " + currentPosition + "\n" +
 			"\tstepDirection: " + stepDirection + "\n" +
 			"\tdistanceSinceLastRotation: " + distanceSinceLastRotation + "\n" +
