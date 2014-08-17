@@ -34,7 +34,7 @@ public class ParalleLinesNodeMaskSequence extends NodeMaskSequence {
 		super();
 		this.sequenceDirection = sequenceDirection;
 		// @TODO(florian.jourda@gmail.com): make the code DRY once the API is stabilized
-		if (sequenceDirection == new PVector(1, 0)) {
+		if (sequenceDirection.equals(new PVector(1, 0))) {
 			this.nodeMaskArray = new NodeMask[width];
 			for (int x = 0; x < width; x++) {
 				PVector top = new PVector(x, 0);
@@ -42,7 +42,7 @@ public class ParalleLinesNodeMaskSequence extends NodeMaskSequence {
 				LineNodeMask nodeMask = new LineNodeMask(lx, top, bottom);
 				this.nodeMaskArray[x] = nodeMask;
 			}
-		} else if (sequenceDirection == new PVector(-1, 0)) {
+		} else if (sequenceDirection.equals(new PVector(-1, 0))) {
 			this.nodeMaskArray = new NodeMask[width];
 			for (int x = 0; x < width; x++){
 				PVector top = new PVector(x, 0);
@@ -50,7 +50,7 @@ public class ParalleLinesNodeMaskSequence extends NodeMaskSequence {
 				LineNodeMask nodeMask = new LineNodeMask(lx, top, bottom);
 				this.nodeMaskArray[width - 1 - x] = nodeMask;
 			}
-		} else if (sequenceDirection == new PVector(0, 1)) {
+		} else if (sequenceDirection.equals(new PVector(0, 1))) {
 			this.nodeMaskArray = new NodeMask[height];
 			for (int y = 0; y < height; y++) {
 				PVector left = new PVector(0, y);
@@ -58,7 +58,7 @@ public class ParalleLinesNodeMaskSequence extends NodeMaskSequence {
 				LineNodeMask nodeMask = new LineNodeMask(lx, left, right);
 				this.nodeMaskArray[y] = nodeMask;
 			}
-		} else if (sequenceDirection == new PVector(1, 0)) {
+		} else if (sequenceDirection.equals(new PVector(0, -1))) {
 			this.nodeMaskArray = new NodeMask[height];
 			for (int y = 0; y < height; y++) {
 				PVector left = new PVector(0, y);
